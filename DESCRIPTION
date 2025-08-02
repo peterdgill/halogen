@@ -19,3 +19,5 @@ Imports:
     shiny,
     shinycssloaders,
     tidyr
+URL: https://github.com/peterdgill/halogen
+BugReports: https://github.com/peterdgill/halogen/issues

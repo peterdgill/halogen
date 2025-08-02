@@ -1,0 +1,90 @@
+---
+title: "HaloGen Analysis Report"
+output: html_document
+params:
+  lab_id: "Unknown Lab"
+  case_details: "Not specified"
+  results_table: NULL
+  param_table: NULL
+  context_plot: NULL
+  contributor_names: NULL        # <- new
+  all_quants: NULL               # <- new
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(knitr)
+library(ggplot2)
+```
+
+## HaloGen Likelihood Ratio Analysis
+
+This report summarises the results of a Likelihood Ratio (LR) calculation performed using the HaloGen Shiny App. The analysis was conducted on `r format(Sys.time(), '%d %B %Y')`.
+
+## Case Details and Parameters
+
+The analysis was performed using the following user-specified case details:
+
+- **Laboratory Model:** `r params$lab_id`  
+- **Case Circumstances:** `r params$case_details`
+
+### Contributor‑by‑Stain Summary
+
+```{r contributor-quantities, results='asis'}
+if (!is.null(params$contributor_names) && !is.null(params$all_quants)) {
+  contrib_df <- data.frame(
+    Contributor = params$contributor_names,
+    Stains      = vapply(params$all_quants, length, integer(1)),
+    `Quantities (ng)`  = vapply(params$all_quants,
+                         function(q) paste(sprintf("%.3g", q), collapse = ", "),
+                         character(1)),
+    stringsAsFactors = FALSE
+  )
+  knitr::kable(contrib_df,
+               caption = "Per‑contributor: number of stains and DNA quantities per stain",
+               booktabs = TRUE,
+               align = c("l","c","l"))
+}
+
+```
+## Likelihood Ratio Results
+
+The following table displays the final $\log_{10}(\text{LR})$ for each contributor under the three different statistical models.
+
+**Note on Interpretation:** The Bayes Lab model is the recommended "gold standard" result. It provides a lab-specific LR that has been robustly informed by the complete inter-laboratory dataset, balancing lab-specific performance with the strength of the wider scientific consensus. The Standalone and Group models are provided for comparative purposes.
+
+```{r results-table, results='asis'}
+if (!is.null(params$results_table)) {
+  kable(params$results_table, caption = "Calculated Log10(LR) for each contributor and model.", booktabs = TRUE, digits = 2)
+}
+```
+
+## Contextual Plot
+
+The following plot illustrates the Mean Log LR curves for the selected laboratory across a range of DNA quantities from the first "known" individual. Since it is a simple 2d plot, it is only condiitonal on one contributor varying, with all other contributors fixed.  The vertical lines indicate the specific DNA quantities entered for the first "known" individual in this case (i.e. for each stain), providing a visual context for the results in the table above. If there is more than one stain, the values in the table will represent the joint LR which is the sum of logs of the individual stain LRs for the known individual. There is no informational context in the plot to help intepret results for other contributors (this is reserved for future iterations of the program)
+
+```{r context-plot, fig.width=8, fig.height=6}
+if (!is.null(params$context_plot)) {
+  print(params$context_plot)
+}
+```
+
+## Underlying Model Parameters
+
+The following table lists the mean parameter estimates that were used to generate the LR calculations. These parameters define the log-normal distributions for direct and secondary transfer for each model.
+
+- **mu (μ):** The mean of the log-transformed DNA quantity.
+- **sigma (σ):** The standard deviation of the log-transformed DNA quantity.
+- **k:** The single-allele dropout probability for a specified contributor.
+- **F0:** The dropout probability for an unobserved offender.
+
+```{r param-table, results='asis'}
+if (!is.null(params$param_table)) {
+  kable(params$param_table, caption = "Mean parameter estimates used in the LR calculation.", booktabs = TRUE, digits = 4)
+}
+```
+
+## Analyst Notes
+
+*This section is intentionally left blank for the user to add their own explanatory text, case notes, and conclusions.*
+

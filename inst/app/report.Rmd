@@ -61,7 +61,9 @@ if (!is.null(params$results_table)) {
 
 ## Contextual Plot
 
-The following plot illustrates the Mean Log LR curves for the selected laboratory across a range of DNA quantities from the first "known" individual. Since it is a simple 2d plot, it is only condiitonal on one contributor varying, with all other contributors fixed.  The vertical lines indicate the specific DNA quantities entered for the first "known" individual in this case (i.e. for each stain), providing a visual context for the results in the table above. If there is more than one stain, the values in the table will represent the joint LR which is the sum of logs of the individual stain LRs for the known individual. There is no informational context in the plot to help intepret results for other contributors (this is reserved for future iterations of the program)
+The following plot illustrates the Mean Log LR curves for the selected laboratory across a range of DNA quantities from the first 'known' individual. Since it is a simple 2d plot, it is only conditional on one contributor varying, with all other contributors fixed. The vertical lines indicate the specific DNA quantities entered for the first 'known' individual in this case (i.e. for each stain), providing a visual context for the results in the table above.
+
+The Log LR values in the table represent the total evidence for each contributor in the full scenario you have defined. For an individual with multiple stains, the evidence is combined to produce a single joint likelihood. When other contributors are also present in the case, the final result is a marginal Log LR, which is calculated by considering all possible combinations of the other contributors (taking account of uncertainty and dependencies in the data). For this reason, the final table value will differ from the simplified curve on the plot. There is no informational context in the plot to help intepret results for other contributors (this is reserved for future iterations of the program)
 
 ```{r context-plot, fig.width=8, fig.height=6}
 if (!is.null(params$context_plot)) {
